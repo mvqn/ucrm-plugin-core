@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-
+namespace UCRM;
 
 
 final class Options
