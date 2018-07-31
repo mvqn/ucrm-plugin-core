@@ -2,6 +2,7 @@
     "name": "mvqn/ucrm-plugin-core",
     "description": "Some core code for use when developing UCRM Plugins.",
     "minimum-stability": "stable",
+    "type": "library",
     "license": "MIT",
     "authors": [
         {
@@ -18,7 +19,7 @@
     },
     "autoload": {
         "psr-4": {
-
+            "UCRM\\": "src/UCRM/"
         }
     }
 }
