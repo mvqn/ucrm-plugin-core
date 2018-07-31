@@ -1,0 +1,24 @@
+{
+    "name": "mvqn/ucrm-plugin-core",
+    "description": "Some core code for use when developing UCRM Plugins.",
+    "minimum-stability": "stable",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ryan Spaeth",
+            "email": "rspaeth@mvqn.net"
+        }
+    ],
+    "require": {
+        "php": "~7.1",
+        "ext-json": "*"
+    },
+    "require-dev": {
+
+    },
+    "autoload": {
+        "psr-4": {
+
+        }
+    }
+}
