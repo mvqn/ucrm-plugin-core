@@ -6,21 +6,24 @@ namespace UCRM\Plugins;
 
 final class Plugin
 {
+    /** @var string   */
+    private $root_path;
 
 
-
+    /**
+     * Plugin constructor.
+     *
+     * @param string $root_path
+     */
     public function __construct(string $root_path)
     {
         $this->root_path = realpath($root_path);
     }
 
 
-
-    private $root_path;
-
-
-
-
+    /**
+     * @return bool Returns true if the plugin is pending execution, otherwise false.
+     */
     public function executing(): bool
     {
         return file_exists(
@@ -30,6 +33,9 @@ final class Plugin
         );
     }
 
+    /**
+     * @return bool Returns true if the plugin is currently executing, otherwise false.
+     */
     public function running(): bool
     {
         return file_exists(
