@@ -8,11 +8,14 @@ use JsonSerializable;
 /**
  * Class InputField
  *
+ * A class used to interact with the configuration fields of the manifest.json.
+ *
  * @package UCRM\Plugins
+ * @author Ryan Spaeth <rspaeth@mvqn.net>
  */
 class InputField implements JsonSerializable
 {
-    /** @var string The key/name to be used for the JSON key/value pair. */
+    /** @var string The key to be used for the JSON key/value pair, also the file name when "file" type is chosen. */
     protected $key;
 
     /** @var string The label displayed on the plugin's settings page. */
@@ -41,22 +44,23 @@ class InputField implements JsonSerializable
     protected $type;
 
     /**
-     * @var array|null
+     * @var array|null An array of choices that is required when the "choice" type is chosen. ("Label" => Value)
      * @since 2.13.0-beta1
      */
     protected $choices;
 
 
+
     /**
      * InputField constructor.
      *
-     * @param string $json
+     * @param string $json An optional JSON string used to initialize this InputField's properties.
      */
     public function __construct(string $json = "")
     {
         // DEFAULTS...
-        $this->key = "";
-        $this->label = "";
+        $this->key = ""; // Required
+        $this->label = ""; // Required
         $this->description = null;
         $this->required = 1;
         $this->type = "text";
@@ -76,16 +80,9 @@ class InputField implements JsonSerializable
     }
 
 
-    public function valid(): bool
-    {
-
-        return true;
-    }
-
-
 
     /**
-     * @return array|mixed
+     * @return array|mixed Returns an array ready for serialization to JSON.
      */
     public function jsonSerialize()
     {
@@ -97,9 +94,8 @@ class InputField implements JsonSerializable
         return $assoc;
     }
 
-
     /**
-     * @return string
+     * @return string Returns a string representation of this InputField.
      */
     public function __toString(): string
     {
@@ -107,8 +103,9 @@ class InputField implements JsonSerializable
     }
 
 
+
     /**
-     * @return string
+     * @return string Gets the Key value of this InputField.
      */
     public function getKey(): string
     {
@@ -116,7 +113,7 @@ class InputField implements JsonSerializable
     }
 
     /**
-     * @param string $key
+     * @param string $key Sets the Key value of this InputField.
      */
     public function setKey(string $key)
     {
@@ -124,7 +121,7 @@ class InputField implements JsonSerializable
     }
 
     /**
-     * @return string
+     * @return string Gets the Label value of this InputField.
      */
     public function getLabel(): string
     {
@@ -132,7 +129,7 @@ class InputField implements JsonSerializable
     }
 
     /**
-     * @param string $label
+     * @param string $label Sets the Label value of this InputField.
      */
     public function setLabel(string $label)
     {
@@ -140,7 +137,7 @@ class InputField implements JsonSerializable
     }
 
     /**
-     * @return string|null
+     * @return string|null Gets the Description value of this InputField, can be null.
      */
     public function getDescription(): ?string
     {
@@ -148,7 +145,7 @@ class InputField implements JsonSerializable
     }
 
     /**
-     * @param string $description
+     * @param string $description Sets the Description value of this InputField.
      */
     public function setDescription(string $description)
     {
@@ -156,7 +153,7 @@ class InputField implements JsonSerializable
     }
 
     /**
-     * @return bool
+     * @return bool Gets the Required value of this InputField.
      */
     public function getRequired(): bool
     {
@@ -164,7 +161,7 @@ class InputField implements JsonSerializable
     }
 
     /**
-     * @param bool $required
+     * @param bool $required Sets the Required value of this InputField.
      */
     public function setRequired(bool $required)
     {
@@ -172,7 +169,7 @@ class InputField implements JsonSerializable
     }
 
     /**
-     * @return string|null
+     * @return string|null Gets the Type value of this InputField, can be null.
      */
     public function getType(): ?string
     {
@@ -180,7 +177,7 @@ class InputField implements JsonSerializable
     }
 
     /**
-     * @param string $type
+     * @param string $type Sets the Type value of this InputField.
      */
     public function setType(string $type)
     {
@@ -188,7 +185,7 @@ class InputField implements JsonSerializable
     }
 
     /**
-     * @return array|null
+     * @return array|null Gets the Choices array of this InputField, can be null.
      */
     public function getChoices(): ?array
     {
@@ -196,7 +193,7 @@ class InputField implements JsonSerializable
     }
 
     /**
-     * @param array $choices
+     * @param array $choices Sets the Choices array of this InputField.
      */
     public function setChoices(array $choices)
     {
@@ -204,6 +201,25 @@ class InputField implements JsonSerializable
     }
 
 
+
+    /**
+     * @return bool Returns true if all information for this InputField is valid, otherwise false.
+     */
+    public function valid(): bool
+    {
+        if($this->key === null || $this->key === "")
+            return false;
+
+        if($this->label === null || $this->label === "")
+            return false;
+
+        if($this->type === "choice" && ($this->choices === null || $this->choices === []))
+            return false;
+
+        // TODO: Add other validation code here...
+
+        return true;
+    }
 
 }
 
