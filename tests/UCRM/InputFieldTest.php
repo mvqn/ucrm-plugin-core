@@ -7,7 +7,6 @@ use PHPUnit\Framework\TestCase;
 use UCRM\Plugins\InputField;
 
 
-
 class InputFieldTest extends TestCase
 {
     protected const MANIFEST_PATH =
