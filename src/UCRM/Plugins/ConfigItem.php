@@ -13,19 +13,19 @@ use JsonSerializable;
  * @package UCRM\Plugins
  * @author Ryan Spaeth <rspaeth@mvqn.net>
  */
-class ConfigItem implements JsonSerializable
+final class ConfigItem implements JsonSerializable
 {
     /** @var string The key to be used for the JSON key/value pair, also the file name when "file" type is chosen. */
-    protected $key;
+    private $key;
 
     /** @var string The label displayed on the plugin's settings page. */
-    protected $label;
+    private $label;
 
     /** @var string|null An optional description of this field to be displayed on the plugin's settings page. */
-    protected $description;
+    private $description;
 
     /** @var int|null An optional flag to indicate if this field's value is required, 0 = false, 1 = true (default). */
-    protected $required;
+    private $required;
 
     /**
      * @var string|null An optional input type for rendering on the plugin's settings page, defaults to "text".
@@ -41,13 +41,13 @@ class ConfigItem implements JsonSerializable
      * - file       File upload input (file name will be the same as "key", saved in "data/config.json" and the file
      *              itself will be stored in the "data/files" folder.
      */
-    protected $type;
+    private $type;
 
     /**
      * @var array|null An array of choices that is required when the "choice" type is chosen. ("Label" => Value)
      * @since 2.13.0-beta1
      */
-    protected $choices;
+    private $choices;
 
 
 

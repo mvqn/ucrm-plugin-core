@@ -13,16 +13,16 @@ use JsonSerializable;
  * @package UCRM\Plugins
  * @author Ryan Spaeth <rspaeth@mvqn.net>
  */
-class Data implements JsonSerializable
+final class Data implements JsonSerializable
 {
     /** @var string  */
-    protected $serverUrl;
+    private $serverUrl;
 
     /** @var string  */
-    protected $pluginUrl;
+    private $pluginUrl;
 
     /** @var string */
-    protected $appKey;
+    private $appKey;
 
     // TODO: Add Data fields as they become available!
 
@@ -31,7 +31,7 @@ class Data implements JsonSerializable
     /**
      * Data constructor.
      *
-     * @param string $json A JSON string used to initialize this Data objects' properties.
+     * @param string $json A JSON string used to initialize this Data object's properties.
      */
     public function __construct(string $json = "")
     {

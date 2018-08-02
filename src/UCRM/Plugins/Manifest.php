@@ -8,36 +8,37 @@ use JsonSerializable;
 
 
 
-class Manifest implements JsonSerializable
+final class Manifest implements JsonSerializable
 {
-    private $path;
 
 
+    private $format;
 
-    protected $format;
-
-    protected $name;
-    protected $displayName;
-    protected $description;
-    protected $url;
-    protected $version;
-    protected $ucrmMinVersion;
-    protected $ucrmMaxVersion;
-    protected $author;
+    private $name;
+    private $displayName;
+    private $description;
+    private $url;
+    private $version;
+    private $ucrmMinVersion;
+    private $ucrmMaxVersion;
+    private $author;
 
     /**
      * @var $configuration ConfigItem[][]
      */
-    protected $configuration;
+    private $configuration;
 
 
 
-    public function __construct(string $path, string $json = "")
+
+
+
+    public function __construct(?string $json = "")
     {
-        $this->path = realpath($path);
+        //$this->path = realpath($path);
 
-        if($json === null || $json === "")
-            $json = file_get_contents($this->path);
+        //if($json === null || $json === "")
+        //    $json = file_get_contents($this->path);
 
         try
         {
@@ -74,10 +75,15 @@ class Manifest implements JsonSerializable
     }
 
 
+
+
+
+
+
+
     public function jsonSerialize()
     {
         $assoc = get_object_vars($this);
-        unset($assoc["path"]);
         $assoc = array_filter($assoc, function($value) {
             return ($value !== null); // && $value !== FALSE && $value !== "");
         });
@@ -92,14 +98,39 @@ class Manifest implements JsonSerializable
     }
 
 
-
-    private function values(): ?array
+    /**
+     * @param string|null $path
+     * @return Manifest
+     */
+    public static function load(?string $path = null): Manifest
     {
-        if(!file_exists($this->root_path))
-            return null;
+        $manifest_file = ($path !== null && $path !== "" && file_exists($path)) ?
+            $path :
+            Plugin::rootPath()."/manifest.json";
 
-        return json_decode(file_get_contents($this->root_path), true);
+        $json = file_get_contents($manifest_file);
+
+        return new Manifest($json);
     }
+
+    /**
+     * @param string|null $path
+     * @return string
+     */
+    public function save(?string $path = null): string
+    {
+        $manifest_file = ($path !== null && $path !== "" && file_exists($path)) ?
+            $path :
+            Plugin::rootPath()."/manifest.json";
+
+        $json = json_encode($this, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+
+        //file_put_contents($manifest_file, $json);
+        return $json;
+    }
+
+
+
 
 
     /**
