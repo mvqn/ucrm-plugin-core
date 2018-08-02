@@ -18,6 +18,10 @@ final class Plugin
 
 
     /**
+     * Plugin::rootPath()
+     *
+     *
+     *
      * @param string|null $path An optional overridden path to use in place of the automatically detected path.
      * @param bool $save An optional flag to determine whether or not the overridden path is saved for future use.
      * @return string Returns the absolute ROOT path of this Plugin, regardless of development or production server.
@@ -47,34 +51,16 @@ final class Plugin
         }
 
         // .../ucrm-plugin-core/
-        $this_root = realpath(
-            __DIR__.
-            DIRECTORY_SEPARATOR."..".
-            DIRECTORY_SEPARATOR."..".
-            DIRECTORY_SEPARATOR."..".
-            DIRECTORY_SEPARATOR
-        );
+        $this_root = realpath(__DIR__."/../../../");
 
         // .../mvqn/
-        $mvqn_root = realpath(
-            $this_root.
-            DIRECTORY_SEPARATOR."..".
-            DIRECTORY_SEPARATOR
-        );
+        $mvqn_root = realpath($this_root."/../");
 
         // .../vendor/
-        $vend_root = realpath(
-            $mvqn_root.
-            DIRECTORY_SEPARATOR."..".
-            DIRECTORY_SEPARATOR
-        );
+        $vend_root = realpath($mvqn_root."/../");
 
         // .../<ucrm-plugin-name>/  (in plugins/ on UCRM Server)
-        $ucrm_root = realpath(
-            $vend_root.
-            DIRECTORY_SEPARATOR."..".
-            DIRECTORY_SEPARATOR
-        );
+        $ucrm_root = realpath($vend_root."/../");
 
         // IF the next two upper directories are recognized as composer's vendor folder and this package name...
         if(dirname($mvqn_root) === "mvqn" && $vend_root === "vendor")
