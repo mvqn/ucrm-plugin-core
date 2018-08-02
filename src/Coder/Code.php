@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 namespace Coder;
-require __DIR__."/../../vendor/autoload.php";
+//require __DIR__."/../../vendor/autoload.php";
 
 /**
  * Code
