@@ -10,73 +10,96 @@ use UCRM\Plugins\Plugin;
 
 class PluginTest extends TestCase
 {
-    protected const PLUGIN_PATH =
+    protected const ROOT_PATH =
         __DIR__.
         DIRECTORY_SEPARATOR."..".
-        DIRECTORY_SEPARATOR."ucrm-plugin-example";
+        DIRECTORY_SEPARATOR."ucrm-plugin-example".
+        DIRECTORY_SEPARATOR;
 
-    protected $plugin;
+    protected const DATA_PATH =
+        self::ROOT_PATH.
+        DIRECTORY_SEPARATOR."data".
+        DIRECTORY_SEPARATOR;
+
+
+
+    protected function setUp()
+    {
+        Plugin::rootPath(realpath(self::ROOT_PATH), true);
+    }
+
+
+
+    public function testRootPath()
+    {
+        $root_path = Plugin::rootPath();
+        $this->assertEquals(realpath(self::ROOT_PATH), $root_path);
+
+        echo "Plugin::rootPath()        : $root_path\r\n";
+    }
+
+    public function testDataPath()
+    {
+        $data_path = Plugin::dataPath();
+        $this->assertEquals(realpath(self::DATA_PATH), $data_path);
+
+        echo "Plugin::dataPath()        : $data_path\r\n";
+    }
+
+
 
     public function testExecuting()
     {
-        if($this->plugin === null)
-            $this->plugin = new Plugin(self::PLUGIN_PATH);
-
-        $result = $this->plugin->executing();
+        $result = Plugin::executing();
         $this->assertTrue($result);
+
+        echo "Plugin::executing()       : ".($result ? "TRUE" : "FALSE")."\r\n";
     }
 
     public function testRunning()
     {
-        if($this->plugin === null)
-            $this->plugin = new Plugin(self::PLUGIN_PATH);
-
-        $result = $this->plugin->running();
+        $result = Plugin::running();
         $this->assertTrue($result);
+
+        echo "Plugin::running()         : ".($result ? "TRUE" : "FALSE")."\r\n";
     }
 
 
 
     public function testConfig()
     {
-        if($this->plugin === null)
-            $this->plugin = new Plugin(self::PLUGIN_PATH);
-
-        $config = $this->plugin->config();
-        print_r($config);
+        $config = Plugin::config();
         $this->assertNotNull($config);
+
+        //$json = json_encode($config);
+
+        echo "Plugin::config()          : $config\r\n";
     }
 
-
-    public function testUcrmUrl()
+    public function testManifest()
     {
-        if($this->plugin === null)
-            $this->plugin = new Plugin(self::PLUGIN_PATH);
+        $manifest = Plugin::manifest();
+        $this->assertNotEmpty($manifest);
 
-        $setting = $this->plugin->ucrmUrl();
-        echo "$setting\n";
-        $this->assertNotNull($setting);
+        echo "Plugin::manifest()        : $manifest\r\n";
     }
 
-    public function testPluginUrl()
+    public function testLog()
     {
-        if($this->plugin === null)
-            $this->plugin = new Plugin(self::PLUGIN_PATH);
+        $line = Plugin::log("This is a test message!");
+        $this->assertStringEndsWith("This is a test message!", $line);
 
-        $setting = $this->plugin->pluginUrl();
-        echo "$setting\n";
-        $this->assertNotNull($setting);
+        echo "Plugin::log()             : $line\r\n";
     }
 
-    public function testAppKey()
-    {
-        if($this->plugin === null)
-            $this->plugin = new Plugin(self::PLUGIN_PATH);
 
-        $setting = $this->plugin->appKey();
-        echo "$setting\n";
-        $this->assertNotNull($setting);
-    }
+
+
+
+
+
+
+
 
 
 

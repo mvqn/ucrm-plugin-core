@@ -3,43 +3,127 @@ declare(strict_types=1);
 
 namespace UCRM\Plugins;
 
+use UCRM\Exceptions\RequiredFileNotFoundException;
 
+
+/**
+ * Class Plugin
+ * @package UCRM\Plugins
+ */
 final class Plugin
 {
-    /** @var string   */
-    private $root_path;
+    /** @var string The root path of this Plugin. */
+    private static $_rootPath = "";
+
 
 
     /**
-     * Plugin constructor.
-     *
-     * @param string $root_path
+     * @param string|null $path An optional overridden path to use in place of the automatically detected path.
+     * @param bool $save An optional flag to determine whether or not the overridden path is saved for future use.
+     * @return string Returns the absolute ROOT path of this Plugin, regardless of development or production server.
      */
-    public function __construct(string $root_path)
+    public static function rootPath(?string $path = "", bool $save = false): string
     {
-        $this->root_path = realpath($root_path);
+        // IF an override path has been provided...
+        if($path !== "" && $path !== null)
+        {
+            // AND save is set, save this overridden path for future use...
+            if($save)
+                self::$_rootPath = $path;
+
+            // OTHERWISE, return this overridden path only this one-time!
+            return $path;
+        }
+        // OTHERWISE, no override path has been provided...
+        else
+        {
+            // AND save is set, reset to automatic detection...
+            if($save)
+                self::$_rootPath = "";
+
+            // OTHERWISE, get the previously saved/detected path!
+            if(self::$_rootPath !== "")
+                return self::$_rootPath;
+        }
+
+        // .../ucrm-plugin-core/
+        $this_root = realpath(
+            __DIR__.
+            DIRECTORY_SEPARATOR."..".
+            DIRECTORY_SEPARATOR."..".
+            DIRECTORY_SEPARATOR."..".
+            DIRECTORY_SEPARATOR
+        );
+
+        // .../mvqn/
+        $mvqn_root = realpath(
+            $this_root.
+            DIRECTORY_SEPARATOR."..".
+            DIRECTORY_SEPARATOR
+        );
+
+        // .../vendor/
+        $vend_root = realpath(
+            $mvqn_root.
+            DIRECTORY_SEPARATOR."..".
+            DIRECTORY_SEPARATOR
+        );
+
+        // .../<ucrm-plugin-name>/  (in plugins/ on UCRM Server)
+        $ucrm_root = realpath(
+            $vend_root.
+            DIRECTORY_SEPARATOR."..".
+            DIRECTORY_SEPARATOR
+        );
+
+        // IF the next two upper directories are recognized as composer's vendor folder and this package name...
+        if(dirname($mvqn_root) === "mvqn" && $vend_root === "vendor")
+        {
+            // THEN set and return the path to the root of the Plugin using this library!
+            self::$_rootPath = $ucrm_root;
+            return $ucrm_root;
+        }
+        else
+        {
+            // OTHERWISE, set and return the path to the root of this library! (FOR TESTING)
+            self::$_rootPath = $this_root;
+            return $this_root;
+        }
+    }
+
+    /**
+     * @return string Returns the absolute DATA path of this Plugin, regardless of development or production server.
+     */
+    public static function dataPath(): string
+    {
+        return realpath(
+            self::rootPath().
+            DIRECTORY_SEPARATOR."data".
+            DIRECTORY_SEPARATOR
+        );
     }
 
 
+
     /**
-     * @return bool Returns true if the plugin is pending execution, otherwise false.
+     * @return bool Returns true if this Plugin is pending execution, otherwise false.
      */
-    public function executing(): bool
+    public static function executing(): bool
     {
         return file_exists(
-            $this->root_path.
+            self::rootPath().
             DIRECTORY_SEPARATOR.
             ".ucrm-plugin-execution-requested"
         );
     }
 
     /**
-     * @return bool Returns true if the plugin is currently executing, otherwise false.
+     * @return bool Returns true if this Plugin is currently executing, otherwise false.
      */
-    public function running(): bool
+    public static function running(): bool
     {
         return file_exists(
-            $this->root_path.
+            self::rootPath().
             DIRECTORY_SEPARATOR.
             ".ucrm-plugin-running"
         );
@@ -47,177 +131,74 @@ final class Plugin
 
 
 
-    public function config(): ?array
+    /**
+     * @return Config Returns the data/config.json of this Plugin.
+     * @throws RequiredFileNotFoundException Thrown when a config.json file cannot be found.
+     */
+    public static function config(): Config
     {
         $config_file =
-            $this->root_path.
-            DIRECTORY_SEPARATOR."data".
+            self::dataPath().
             DIRECTORY_SEPARATOR."config.json";
 
         if(!file_exists($config_file))
-            return null;
+            throw new RequiredFileNotFoundException(
+                "A 'config.json' file could not be found at '".self::$_rootPath."'.");
 
-        return json_decode(file_get_contents($config_file), true);
+        $json = file_get_contents($config_file);
+
+        return new Config($json);
     }
 
-
-
-    public function logs(int $tail = 0): ?array
-    {
-        $log_file =
-            $this->root_path.
-            DIRECTORY_SEPARATOR."data".
-            DIRECTORY_SEPARATOR."plugin.log";
-
-        if(!file_exists($log_file))
-            return null;
-
-        $lines = explode(PHP_EOL, file_get_contents($log_file));
-
-        if($tail < 0)
-            return null;
-
-        if($tail === 0)
-            return $lines;
-
-        return array_slice($lines, -$tail, $tail);
-    }
-
-    public function log(string $message): void //array
-    {
-        $log_file =
-            $this->root_path.
-            DIRECTORY_SEPARATOR."data".
-            DIRECTORY_SEPARATOR."plugin.log";
-
-        if(!file_exists(dirname($log_file)))
-            mkdir(dirname($log_file));
-
-        file_put_contents(
-            $log_file,
-            sprintf(
-                "[%s] %s %s",
-                (new \DateTimeImmutable())->format("Y-m-d G:i:s.u"),
-                $message,
-                PHP_EOL
-            ),
-            FILE_APPEND | LOCK_EX
-        );
-
-        //return explode(PHP_EOL, file_get_contents($log_file));
-    }
-
-
-    public function manifest(): array
+    /**
+     * @return Manifest Returns the manifest.json of this Plugin as a Manifest object.
+     * @throws RequiredFileNotFoundException Thrown when a manifest.json file cannot be found.
+     */
+    public static function manifest(): Manifest
     {
         $manifest_file =
-            $this->root_path.
+            self::rootPath().
             DIRECTORY_SEPARATOR."manifest.json";
 
         if(!file_exists($manifest_file))
-            return null;
+            throw new RequiredFileNotFoundException(
+                "A manifest.json file could not be found at '".self::$_rootPath."'.");
 
-        return json_decode(file_get_contents($manifest_file), true);
+        return new Manifest($manifest_file);
     }
 
 
 
-    public function manifestVersion(): string
+    /**
+     * @param string $message
+     * @return string
+     */
+    public static function log(string $message): string
     {
-        $value = $this->manifest()["version"];
-        return $value;
-    }
-
-    public function name(): string
-    {
-        $value = $this->manifest()["information"]["name"];
-        return $value;
-    }
-
-    public function displayName(): string
-    {
-        $value = $this->manifest()["information"]["displayName"];
-        return $value;
-    }
-
-    public function description(): string
-    {
-        $value = $this->manifest()["information"]["description"];
-        return $value;
-    }
-
-    public function url(): string
-    {
-        $value = $this->manifest()["information"]["url"];
-        return $value;
-    }
-
-    public function version(): string
-    {
-        $value = $this->manifest()["information"]["version"];
-        return $value;
-    }
-
-    public function ucrmMinVersion(): string
-    {
-        $value = $this->manifest()["information"]["ucrmVersionCompliancy"]["min"];
-        return $value;
-    }
-
-    public function ucrmMaxVersion(): string
-    {
-        $value = $this->manifest()["information"]["ucrmVersionCompliancy"]["max"];
-        return $value;
-    }
-
-    public function author(): string
-    {
-        $value = $this->manifest()["information"]["author"];
-        return $value;
-    }
-
-    public function manifestConfiguration(): ?array
-    {
-        $manifest = $this->manifest();
-        $value = array_key_exists("configuration", $manifest) ? $manifest["configuration"] : null;
-    }
-
-    public function settings(): ?array
-    {
-        return $this->manifestConfiguration();
+        return Log::write($message);
     }
 
 
 
-    private function ucrmConfig(): ?array
+    /**
+     * @return Data
+     * @throws RequiredFileNotFoundException
+     */
+    private static function data(): Data
     {
-        $config_file =
-            $this->root_path.
+        $data_file =
+            self::rootPath().
             DIRECTORY_SEPARATOR."ucrm.json";
 
-        if(!file_exists($config_file))
-            return null;
+        if(!file_exists($data_file))
+            throw new RequiredFileNotFoundException(
+                "The 'ucrm.json' file could not be found at '".self::$_rootPath."'.");
 
-        return json_decode(file_get_contents($config_file), true);
+        $json = file_get_contents($data_file);
+
+        return new Data($json);
     }
 
-    public function ucrmUrl(): string
-    {
-        $config = $this->ucrmConfig();
-        return $config["ucrmPublicUrl"] ?: "";
-    }
-
-    public function pluginUrl(): string
-    {
-        $config = $this->ucrmConfig();
-        return $config["pluginPublicUrl"] ?: "";
-    }
-
-    public function appKey(): string
-    {
-        $config = $this->ucrmConfig();
-        return $config["pluginAppKey"] ?: "";
-    }
 
 
 

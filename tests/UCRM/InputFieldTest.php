@@ -4,7 +4,7 @@ declare(strict_types=1);
 require_once __DIR__."/../../vendor/autoload.php";
 
 use PHPUnit\Framework\TestCase;
-use UCRM\Plugins\InputField;
+use UCRM\Plugins\ConfigItem;
 
 
 class InputFieldTest extends TestCase
@@ -25,7 +25,7 @@ class InputFieldTest extends TestCase
         $field = $this->manifest["configuration"][0];
         $json = json_encode($field);
 
-        $this->inputField = new InputField($json);
+        $this->inputField = new ConfigItem($json);
 
     }
 
@@ -34,7 +34,7 @@ class InputFieldTest extends TestCase
     public function testToString()
     {
         if($this->inputField === null)
-            $this->inputField = new InputField();
+            $this->inputField = new ConfigItem();
 
         echo $this->inputField."\n";
         $this->assertNotEquals("[]", (string)$this->inputField);
@@ -45,7 +45,7 @@ class InputFieldTest extends TestCase
     public function testGetKey()
     {
         if($this->inputField === null)
-            $this->inputField = new InputField();
+            $this->inputField = new ConfigItem();
 
         echo $this->inputField->getKey()."\n";
         $this->assertNotEmpty($this->inputField->getKey());
@@ -54,7 +54,7 @@ class InputFieldTest extends TestCase
     public function testSetKey()
     {
         if($this->inputField === null)
-            $this->inputField = new InputField();
+            $this->inputField = new ConfigItem();
 
         $value = $this->inputField->getKey();
         $value = strrev($value);
@@ -74,7 +74,7 @@ class InputFieldTest extends TestCase
     public function testGetType()
     {
         if($this->inputField === null)
-            $this->inputField = new InputField();
+            $this->inputField = new ConfigItem();
 
         echo $this->inputField->getType()."\n";
         $this->assertEmpty($this->inputField->getType());
@@ -83,7 +83,7 @@ class InputFieldTest extends TestCase
     public function testSetType()
     {
         if($this->inputField === null)
-            $this->inputField = new InputField();
+            $this->inputField = new ConfigItem();
 
         $value = $this->inputField->getType();
         $value = "datetime";
@@ -99,9 +99,9 @@ class InputFieldTest extends TestCase
     public function testGetChoices()
     {
         if($this->inputField === null)
-            $this->inputField = new InputField();
+            $this->inputField = new ConfigItem();
 
-        $inputField = new InputField(json_encode($this->manifest["configuration"][2]));
+        $inputField = new ConfigItem(json_encode($this->manifest["configuration"][2]));
 
         print_r($inputField->getChoices());
         $this->assertNotEmpty($inputField->getChoices());
@@ -110,9 +110,9 @@ class InputFieldTest extends TestCase
     public function testSetChoices()
     {
         if($this->inputField === null)
-            $this->inputField = new InputField();
+            $this->inputField = new ConfigItem();
 
-        $inputField = new InputField(json_encode($this->manifest["configuration"][2]));
+        $inputField = new ConfigItem(json_encode($this->manifest["configuration"][2]));
         $choices = $inputField->getChoices();
         $choices["Public Schema"] = "public";
         $inputField->setChoices($choices);

@@ -3,12 +3,14 @@ declare(strict_types=1);
 
 namespace UCRM\Plugins;
 
+use Exception;
 use JsonSerializable;
+
 
 
 class Manifest implements JsonSerializable
 {
-    private $root_path;
+    private $path;
 
 
 
@@ -24,17 +26,20 @@ class Manifest implements JsonSerializable
     protected $author;
 
     /**
-     * @var $configuration InputField[][]
+     * @var $configuration ConfigItem[][]
      */
     protected $configuration;
 
 
 
-    public function __construct(string $root_path, string $json = "")
+    public function __construct(string $path, string $json = "")
     {
-        $this->root_path = realpath($root_path);
+        $this->path = realpath($path);
 
-        if($json !== "")
+        if($json === null || $json === "")
+            $json = file_get_contents($this->path);
+
+        try
         {
             $assoc = json_decode($json, true);
 
@@ -52,16 +57,15 @@ class Manifest implements JsonSerializable
             $configuration = $assoc["configuration"];
 
             $this->configuration = [];
-            foreach($configuration as $config)
-            {
+            foreach ($configuration as $config) {
                 $json = json_encode($config);
-                $inputField = new InputField($json);
+                $inputField = new ConfigItem($json);
                 $this->configuration[] = $inputField;
                 //echo (string)$inputField;
             }
-
-
-
+        }
+        catch(Exception $e)
+        {
 
         }
 
@@ -73,7 +77,7 @@ class Manifest implements JsonSerializable
     public function jsonSerialize()
     {
         $assoc = get_object_vars($this);
-        unset($assoc["root_path"]);
+        unset($assoc["path"]);
         $assoc = array_filter($assoc, function($value) {
             return ($value !== null); // && $value !== FALSE && $value !== "");
         });
@@ -99,7 +103,7 @@ class Manifest implements JsonSerializable
 
 
     /**
-     * @return InputField[]|null
+     * @return ConfigItem[]|null
      */
     public function getConfiguration(): ?array
     {

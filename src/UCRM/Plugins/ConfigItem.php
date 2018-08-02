@@ -6,14 +6,14 @@ namespace UCRM\Plugins;
 use JsonSerializable;
 
 /**
- * Class InputField
+ * Class ConfigItem
  *
  * A class used to interact with the configuration fields of the manifest.json.
  *
  * @package UCRM\Plugins
  * @author Ryan Spaeth <rspaeth@mvqn.net>
  */
-class InputField implements JsonSerializable
+class ConfigItem implements JsonSerializable
 {
     /** @var string The key to be used for the JSON key/value pair, also the file name when "file" type is chosen. */
     protected $key;
@@ -52,9 +52,9 @@ class InputField implements JsonSerializable
 
 
     /**
-     * InputField constructor.
+     * ConfigItem constructor.
      *
-     * @param string $json An optional JSON string used to initialize this InputField's properties.
+     * @param string $json An optional JSON string used to initialize this ConfigItem's properties.
      */
     public function __construct(string $json = "")
     {
@@ -95,7 +95,7 @@ class InputField implements JsonSerializable
     }
 
     /**
-     * @return string Returns a string representation of this InputField.
+     * @return string Returns a string representation of this ConfigItem.
      */
     public function __toString(): string
     {
@@ -105,7 +105,7 @@ class InputField implements JsonSerializable
 
 
     /**
-     * @return string Gets the Key value of this InputField.
+     * @return string Gets the Key value of this ConfigItem.
      */
     public function getKey(): string
     {
@@ -113,7 +113,7 @@ class InputField implements JsonSerializable
     }
 
     /**
-     * @param string $key Sets the Key value of this InputField.
+     * @param string $key Sets the Key value of this ConfigItem.
      */
     public function setKey(string $key)
     {
@@ -121,7 +121,7 @@ class InputField implements JsonSerializable
     }
 
     /**
-     * @return string Gets the Label value of this InputField.
+     * @return string Gets the Label value of this ConfigItem.
      */
     public function getLabel(): string
     {
@@ -129,7 +129,7 @@ class InputField implements JsonSerializable
     }
 
     /**
-     * @param string $label Sets the Label value of this InputField.
+     * @param string $label Sets the Label value of this ConfigItem.
      */
     public function setLabel(string $label)
     {
@@ -137,7 +137,7 @@ class InputField implements JsonSerializable
     }
 
     /**
-     * @return string|null Gets the Description value of this InputField, can be null.
+     * @return string|null Gets the Description value of this ConfigItem, can be null.
      */
     public function getDescription(): ?string
     {
@@ -145,7 +145,7 @@ class InputField implements JsonSerializable
     }
 
     /**
-     * @param string $description Sets the Description value of this InputField.
+     * @param string $description Sets the Description value of this ConfigItem.
      */
     public function setDescription(string $description)
     {
@@ -153,7 +153,7 @@ class InputField implements JsonSerializable
     }
 
     /**
-     * @return bool Gets the Required value of this InputField.
+     * @return bool Gets the Required value of this ConfigItem.
      */
     public function getRequired(): bool
     {
@@ -161,7 +161,7 @@ class InputField implements JsonSerializable
     }
 
     /**
-     * @param bool $required Sets the Required value of this InputField.
+     * @param bool $required Sets the Required value of this ConfigItem.
      */
     public function setRequired(bool $required)
     {
@@ -169,7 +169,7 @@ class InputField implements JsonSerializable
     }
 
     /**
-     * @return string|null Gets the Type value of this InputField, can be null.
+     * @return string|null Gets the Type value of this ConfigItem, can be null.
      */
     public function getType(): ?string
     {
@@ -177,7 +177,7 @@ class InputField implements JsonSerializable
     }
 
     /**
-     * @param string $type Sets the Type value of this InputField.
+     * @param string $type Sets the Type value of this ConfigItem.
      */
     public function setType(string $type)
     {
@@ -185,7 +185,7 @@ class InputField implements JsonSerializable
     }
 
     /**
-     * @return array|null Gets the Choices array of this InputField, can be null.
+     * @return array|null Gets the Choices array of this ConfigItem, can be null.
      */
     public function getChoices(): ?array
     {
@@ -193,7 +193,7 @@ class InputField implements JsonSerializable
     }
 
     /**
-     * @param array $choices Sets the Choices array of this InputField.
+     * @param array $choices Sets the Choices array of this ConfigItem.
      */
     public function setChoices(array $choices)
     {
@@ -203,7 +203,7 @@ class InputField implements JsonSerializable
 
 
     /**
-     * @return bool Returns true if all information for this InputField is valid, otherwise false.
+     * @return bool Returns true if all information for this ConfigItem is valid, otherwise false.
      */
     public function valid(): bool
     {
