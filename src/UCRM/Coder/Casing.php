@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Coder;
+namespace UCRM\Coder;
 //require __DIR__."/../../vendor/autoload.php";
 
 final class Casing
