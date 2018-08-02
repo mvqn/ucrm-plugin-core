@@ -19,7 +19,8 @@
     },
     "autoload": {
         "psr-4": {
-            "UCRM\\": "src/UCRM/"
+            "UCRM\\": "src/UCRM/",
+            "Coder\\": "src/Coder/"
         }
     }
 }
